@@ -31,3 +31,8 @@
   flex-direction: column;
   align-content: center;
 }
+.button{
+  width: 10%;
+  background-color: red;
+  margin: 0 auto,
+}

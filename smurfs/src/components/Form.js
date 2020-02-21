@@ -1,41 +1,59 @@
 import React from 'react'; 
-import { useContext } from 'react';
-import { FormContext } from '../contexts/FormContext';
-import cuid from 'cuid';
-
-
-export const Form = () =>{
-    const { newSmurf, setNewSmurf, Add } = useContext(FormContext);
-    const handleChanges= event=>{
-        setNewSmurf({...newSmurf,[event.target.name]:event.target.value})
+import axios from 'axios';
+export default class Form extends React.Component {
+    constructor(){
+        super();
+        this.state= {
+            name: '',
+            age: '',
+            height: ''
+    }};
+    handleChanges = e =>{
+        e.preventDefault();
+        this.setState({[e.target.name] : e.target.value})
+    };
+    onSubmit = e =>{
+        e.preventDefault();
+        const newSmurf = {
+            name: this.state.name,
+            age: this.state.age,
+            height: this.state.height
+        }
+        axios.post('http://localhost:3333/smurfs', newSmurf)
+            .then( res =>{
+              console.log("This adding a smurf", res.data)
+            })
+            .catch(error => console.log("Adding is not working",error))
+          window.location.reload();
     }
-    
-    const handleSubmit = event=>{
-        event.preventDefault();
-        Add(newSmurf);
-
-    }
+    render() {
     return (
-    
     <div className="formCard">
-        <form onSubmit={event=>handleSubmit(event)}>
-           <label htmlFor="name"><span>Add Smurf Name: </span></label>  
-           <input type="text" value={newSmurf.name} name="name" id="name" onChange={event=>handleChanges(event)}/>
-           <label htmlFor="age"><span>Add Smurf Age: </span></label>  
-           <input type="text" value={newSmurf.age} name="age" id="age" onChange={event=>handleChanges(event)}/>
-           <label htmlFor="height"><span>Add Smurf Height: </span></label>  
-           <input type="text" value={newSmurf.height} name="height" id="height" onChange={event=>handleChanges(event)}/>
+        <form className="card" onSubmit={this.onSubmit}>  
+                <input 
+                type="text" 
+                value={this.state.name} 
+                placeholder="Enter Smurf Name"
+                name="name" 
+                onChange={this.handleChanges}
+                />  
+                <input 
+                type="text" 
+                value={this.state.age} 
+                placeholder="Enter Age"
+                name="age" 
+                onChange={this.handleChanges}
+                />  
+                <input 
+                type="text" 
+                value={this.state.height} 
+                placeholder="Enter Height"
+                name="height" 
+                onChange={this.handleChanges}
+                />
+            <button type="submit">Submit</button>    
         </form> 
-        <button type="submit" onClick={event=>handleSubmit(event)}>Submit</button>
-         <div className="newSmurf">
-            {/* {smurf.map(item=>{
-                return(
-                    <div key={cuid()}>
-                    <p>{item.name}</p>
-                    <p>{item.age}</p>
-                    <p>{item.height}</p>
-                     </div>
-                )
-            })} */}
-         </div>
-    </div>)}; 
+    </div>
+    )
+  }
+}
